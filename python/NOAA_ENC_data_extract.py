@@ -14,12 +14,13 @@ import zipfile
 from arcgis.gis import GIS
 import shutil
 import tempfile
+from arcgis.features import FeatureLayerCollection
 
 #CREATE VARIABLES
 
 #create a list of ENCs to download
 #list will need to be updated as more windfarms are constructed
-#US5RI1BE is in band 5 (block island wind farm submarine cables are in this band), all other data is band 4 (approach band)
+#US5RI1BE is in band 5 (block island wind farm submarine cables are in this cell), all other data is band 4 (approach band)
 charts_to_download = ["US4NY1BY.zip", "US4RI1CB.zip", "US4MA1CC.zip", "US4MA1CD.zip", 
 "US4MA1CE.zip", "US4MA1DE.zip", "US4MA1DD.zip", "US4MA1DC.zip", "US4RI1DB.zip", 
 "US4NY1CY.zip", "US4NJ1FH.zip", "US4NJ1FG.zip", "US4NY1BM.zip", "US5RI1BE.zip", 
@@ -70,7 +71,7 @@ def download_charts_to_disk(target_filenames, destination_folder):
             
             #use stream=True to avoid loading the whole file into memory
             with requests.get(file_url, stream=True) as response:
-                #Check if the download was successful (status code 200)
+                #check if the download was successful (status code 200)
                 response.raise_for_status() 
                 
                 #open the local file in binary-write mode and save the content in chunks
@@ -135,7 +136,7 @@ extraction_features = {
     "Buoys":{
         "layer_name": "BOYSPP", #name of ENC buoy layer 
         "geometry_type": ogr.wkbPoint,
-        "filter_attribute": None, #not sure if there is a way to filter out only research buoys
+        "filter_attribute": None, #could filter using "CATSPM", need to determine correct filter values
         "filter_value": None,
         "output_name": "NOAA_ENC_Buoys"},
 }
@@ -177,7 +178,7 @@ for zip_filename in sorted(list(set(charts_to_download))):
         if layer and layer.GetFeatureCount() > 0:
             print(f"  Found '{params['layer_name']}' layer with {layer.GetFeatureCount()} features. Checking for '{target_name}'...")
             
-            #capture the schema for this layer 
+            #capture the column info for this layer 
             if schemas[target_name] is None:
                 schemas[target_name] = []
                 layer_defn = layer.GetLayerDefn()
@@ -188,7 +189,7 @@ for zip_filename in sorted(list(set(charts_to_download))):
                     })
                 print(f"Captured schema for {target_name}.")
 
-            #process features in the layer
+            #process features, geometry in the layer
             for source_feature in layer:
                 geom = source_feature.GetGeometryRef()
                 if geom and geom.GetGeometryType() == params["geometry_type"]:
@@ -220,7 +221,7 @@ for zip_filename in sorted(list(set(charts_to_download))):
                     #if the feature passed the filter (or if no filter was needed), add it to collected features dictionary
                     if passes_filter:
                         feature_data = {
-                            "geometry": geom.ExportToWkt(), # Export geometry as WKT
+                            "geometry": geom.ExportToWkt(), #export geometry as WKT
                             "attributes": attributes,
                             "source_file": zip_filename
                         }
@@ -237,7 +238,7 @@ gis= GIS("PRO")
 arcpy.env.workspace = output_gdb
 arcpy.env.overwriteOutput = True
 
-#loop through the targets to create a feature class and publish for each one
+#loop through the targets to create a feature class and publish/update for each one
 for target_name, features in collected_features.items():
     if not features:
         print(f"\nNo '{target_name}' features were found to process.")
@@ -256,11 +257,10 @@ for target_name, features in collected_features.items():
     #publish to AGOL or update if feature service is already published
     print(f"Starting ArcGIS Online process for '{output_name}'...")
     try:
-        # Search for the item on AGOL to see if it already exists
+        #search for the item on AGOL to see if it already exists
         search_result = gis.content.search(f"title:'{output_name}'", item_type="Feature Service")
 
-
-        # Package the feature class into a zipped File GDB for uploading
+        #package the feature class into a zipped File GDB for uploading
         with tempfile.TemporaryDirectory() as temp_dir:
             gdb_name = "data.gdb"
             gdb_path = os.path.join(temp_dir, gdb_name)
@@ -270,14 +270,14 @@ for target_name, features in collected_features.items():
             zip_path = os.path.join(temp_dir, f"{output_name}.zip")
             shutil.make_archive(os.path.join(temp_dir, output_name), 'zip', temp_dir, gdb_name)
 
-            # Check if the service exists and decide whether to update or publish
-            ##### NEEDS WORK #######
+            #check if the service exists and decide whether to update or publish
             if search_result:
-                # UPDATE (Overwrite) existing service
-                print(f"  Service '{output_name}' found. Overwriting data...")
+                #update (overwrite) existing service
+                print(f"Service '{output_name}' found. Overwriting data...")
                 feature_service = search_result[0]
-                manager = feature_service.manager
-                feature_service.overwrite(zip_path)
+                #get the item's manager object
+                flc_manager = FeatureLayerCollection.fromitem(feature_service).manager
+                flc_manager.overwrite(zip_path)
                 print("Successfully updated service.")
             else:
                 #publish new service
@@ -286,11 +286,11 @@ for target_name, features in collected_features.items():
                     "title": output_name,
                     "type": "File Geodatabase"
                 }
-                fgdb_item = gis.content.add(item_properties, data=zip_path)
+                fgdb_item = gis.content.add(item_properties, data=zip_path, overwrite=True)
                 published_item = fgdb_item.publish()
 
-                print(f"  Successfully published '{published_item.title}'.")
-                fgdb_item.delete() # Clean up the uploaded GDB item
+                print(f"Successfully published '{published_item.title}'.")
+                fgdb_item.delete() #clean up the uploaded GDB item
 
     except Exception as e:
         print(f"An error occurred with service '{output_name}': {e}")
