@@ -235,7 +235,7 @@ arcpy.env.workspace = output_gdb
 arcpy.env.overwriteOutput = True
 
 # define the spatial reference for the output data (WGS 84)
-sr = arcpy.SpatialReference(3857) 
+sr = arcpy.SpatialReference(4326) 
 
 # A dictionary to map OGR geometry types to arcpy geometry types
 geometry_type_map = {
