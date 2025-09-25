@@ -271,11 +271,20 @@ for target_name, features in collected_features.items():
         target_schema = schemas[target_name]
         if target_schema:
             for field in target_schema:
-                if field["type"] == 4: 
-                    arcpy.AddField_management(in_memory_fc, field["name"], "TEXT", field_length=field["width"])
+                field_name = field["name"]
+                field_type = field["type"]
+
+                # If the field is a decimal/real number, keep it as DOUBLE
+                if field_type == 2:
+                    arcpy.AddField_management(in_memory_fc, field_name, "DOUBLE")
+                # Otherwise, save everything else as TEXT
+                else:
+                    arcpy.AddField_management(in_memory_fc, field_name, "TEXT", field_length=255) # Use a safe length
+
         arcpy.AddField_management(in_memory_fc, "source_file", "TEXT", field_length=100)
-        
-        # Populate the in-memory feature class using an Insert Cursor
+
+
+        # Populate the in-memory feature class
         existing_fields = [f.name for f in arcpy.ListFields(in_memory_fc)]
         schema_field_names = [field['name'] for field in target_schema if field['name'] in existing_fields]
         insert_fields = ["SHAPE@"] + schema_field_names + ["source_file"]
@@ -283,7 +292,10 @@ for target_name, features in collected_features.items():
         with arcpy.da.InsertCursor(in_memory_fc, insert_fields) as cursor:
             for feature in features:
                 geometry = arcpy.FromWKT(feature["geometry"], sr)
+                
+                # No conversion needed, just get the attributes directly
                 attributes = [feature["attributes"].get(name) for name in schema_field_names]
+                
                 row = [geometry] + attributes + [feature["source_file"]]
                 cursor.insertRow(row)
 
