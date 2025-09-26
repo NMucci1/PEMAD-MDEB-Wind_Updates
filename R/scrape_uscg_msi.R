@@ -89,4 +89,4 @@ ll_df |>
   dplyr::summarize(n = dplyr::n())
 
 ## output
-sf::st_write(obj = ll_df, dsn = here::here('data', 'uscg_msi_wtgs.gdb'), delete_dsn = TRUE, append = FALSE)
+sf::st_write(obj = ll_df, dsn = here::here('data', 'uscg_msi_struct.gdb'), delete_dsn = TRUE, append = FALSE)
