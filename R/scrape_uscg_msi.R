@@ -80,7 +80,7 @@ ll_df <- do.call(dplyr::bind_rows, ll_data) |>
   dplyr::rowwise() |>
   dplyr::mutate(STRUCTURE_ID = dplyr::last(WTG_NAME)) |>
   dplyr::select(-WTG_NAME) |>
-  dplyr::select(OWF, WTG_ID, NAME, DESCRIPTION_TYPE, REMARK, STRUCTURE_REMARK, CREATE_DATE, MODIFIED_DATE, DECIMAL_LONGITUDE, DECIMAL_LATITUDE, geometry)
+  dplyr::select(OWF, STRUCTURE_ID, NAME, DESCRIPTION_TYPE, REMARK, STRUCTURE_REMARK, CREATE_DATE, MODIFIED_DATE, DECIMAL_LONGITUDE, DECIMAL_LATITUDE, geometry)
 
 ## fix name error
 ll_df$OWF[which(ll_df$OWF == 'Vineyard Wind')] = 'Vineyard Wind 1'
