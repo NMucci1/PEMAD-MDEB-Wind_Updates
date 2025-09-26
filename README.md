@@ -1,6 +1,6 @@
 # Offshore energy infrastructure
 
-[![gitleaks](https://github.com/jmhatch-NOAA/PEMAD-MDEB-Wind_Updates/actions/workflows/secretScan.yml/badge.svg)](https://github.com/jmhatch-NOAA/PEMAD-MDEB-Wind_Updates/actions/workflows/secretScan.yml) 
+[![gitleaks](https://github.com/NMucci1/PEMAD-MDEB-Wind_Updates/actions/workflows/secretScan.yml/badge.svg)](https://github.com/NMucci1/PEMAD-MDEB-Wind_Updates/actions/workflows/secretScan.yml) 
 
 ### Legal disclaimer
 
