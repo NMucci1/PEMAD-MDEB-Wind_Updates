@@ -6,26 +6,26 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# create a list of ENCs to download
+# Create a list of ENCs to download
 charts_to_download = ["US4NY1BY.zip", "US4RI1CB.zip", "US4MA1CC.zip", "US4MA1CD.zip", 
 "US4MA1CE.zip", "US4MA1DE.zip", "US4MA1DD.zip", "US4MA1DC.zip", "US4RI1DB.zip", 
 "US4NY1CY.zip", "US4NJ1FH.zip", "US4NJ1FG.zip", "US4NY1BM.zip", "US5RI1BE.zip", 
 "US4NY1BX.zip", "US4VA1AG.zip", "US4VA1AH.zip", "US4VA1AI.zip", "US4VA1BG.zip", 
 "US4VA1BH.zip", "US4VA1BI.zip"]
 
-# set a folder location on disc to download the chart data to 
+# Set a folder location on disc to download the chart data to 
 base_dir = Path(__file__).resolve().parent.parent.parent.parent
-target_folder_path = base_dir / "data" / "ENC"
+target_folder_path = base_dir / "data-raw" / "ENC"
 
+# Get AGOL item ID credentials securely using os.getenv()
 env_path = Path.home()/'.config'/'secrets'/'.env' 
 load_dotenv(dotenv_path=env_path)
-# Get item ID credentials securely using os.getenv()
 turbine_id = os.getenv("TURBINE_ITEM_ID")
 buoy_id = os.getenv("BUOY_ITEM_ID")
 cable_id = os.getenv("CABLE_ITEM_ID")
 substation_id = os.getenv("SUBSTATION_ITEM_ID")
 
-# define the features to extract from ENC
+# Define the features to extract from ENC
 extraction_features = {
     "Wind_Turbines": {
         "layer_name": "LNDMRK", # name of ENC landmark layer
@@ -58,4 +58,18 @@ extraction_features = {
         "output_name": "NOAA_ENC_Buoys",
         "agol_item_id": buoy_id,
         "agol_layer_index": 0},
+}
+
+# Define file path for field description CSVs
+turbine_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_LNDMRK.csv"
+buoy_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_BOYSPP.csv"
+cable_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_CBLSUB.csv"
+substation_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_OFSPLF.csv"
+
+# Map the AGOL Feature Service Item IDs to their corresponding CSV field definition file paths
+item_id_csv_map = {
+    turbine_id: turbine_csv_path,
+    buoy_id: buoy_csv_path,
+    cable_id: cable_csv_path,
+    substation_id: substation_csv_path
 }

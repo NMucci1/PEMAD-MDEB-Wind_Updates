@@ -6,11 +6,12 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from arcgis.gis import GIS
-from enc_processor import config, downloader, processor
+from enc_processor import config, downloader, processor, field_updater
 
 def run_workflow():
     """
-    Executes the full workflow: download ENCs, process files, and update AGOL features services.
+    Executes the full workflow: download ENCs, process files, update AGOL features services,
+    and update feature service field defintions.
 
     """
     # 1. Define .env variables to log into AGOL
@@ -31,7 +32,7 @@ def run_workflow():
         print(f"Could not connect to ArcGIS Online. Error: {e}")
         return
 
-    # 3. Download the chart data using the downloader and settings from the config file
+    # 3. Download the chart data using the downloader
     downloader.download_charts_to_disk(
         config.charts_to_download, 
         config.target_folder_path
@@ -42,6 +43,12 @@ def run_workflow():
         gis=gis,
         data_dir=config.target_folder_path,
         feature_config=config.extraction_features
+    )
+
+    # 5. Update the AGOL field aliases and descriptions for increased user interoperability
+    field_updater.update_field_definitions(
+        gis=gis,
+        map = config.item_id_csv_map
     )
 
 if __name__ == "__main__":
