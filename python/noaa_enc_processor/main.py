@@ -1,5 +1,5 @@
 #############################################
-##               MAIN SCRIPT               ##
+##      MAIN SCRIPT TO RUN WORKFLOW        ##
 #############################################
 
 import os
@@ -45,12 +45,13 @@ def run_workflow():
         feature_config=config.extraction_features
     )
 
-    # 5. Update the AGOL field aliases and descriptions for increased user interoperability
+    # 5. Update the AGOL field names (aliases) and descriptions for increased user interoperability
     field_updater.update_field_definitions(
         gis=gis,
         map = config.item_id_csv_map
     )
 
+# Run the workflow
 if __name__ == "__main__":
     run_workflow()
     print("Workflow complete.")

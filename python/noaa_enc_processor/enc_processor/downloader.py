@@ -31,7 +31,7 @@ def download_charts_to_disk(target_filenames, destination_folder):
             with requests.get(file_url, stream=True) as response:
                 response.raise_for_status() # Raise an exception for bad status codes
                 with open(output_filepath, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
+                    for chunk in response.iter_content(chunk_size=8192):  # Download in chunks
                         f.write(chunk)
             print(f"Successfully saved {filename}.")
         except requests.exceptions.RequestException as e:
