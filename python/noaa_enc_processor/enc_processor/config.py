@@ -61,10 +61,10 @@ extraction_features = {
 }
 
 # Define file path for the S-57 data dictionary field description CSVs
-turbine_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_LNDMRK.csv"
-buoy_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_BOYSPP.csv"
-cable_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_CBLSUB.csv"
-substation_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Data_Dictionary_OFSPLF.csv"
+turbine_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_LNDMRK.csv"
+buoy_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_BOYSPP.csv"
+cable_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_CBLSUB.csv"
+substation_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_OFSPLF.csv"
 
 # Map the AGOL feature service item IDs to their corresponding CSV field definition file paths
 item_id_csv_map = {
