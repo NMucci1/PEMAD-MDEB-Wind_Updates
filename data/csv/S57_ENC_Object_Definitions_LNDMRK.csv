@@ -1,31 +1,31 @@
 name,alias,description
 OBJECTID,,
 RCID,Record identification number,The only constraint on usage of this subfield is that the concatenation of the RCID and RCNM subfields must be unique within the file in which the record is contained.
-PRIM,Object geometric primitive,
+PRIM,Object geometry,Object geometry type
 GRUP,Group,Used to separate feature objects into groups
 OBJL,Object label/code,A valid object label/code
 RVER,Record version,Record version is used for updating and contains the serial number of the record edition
 AGEN,Producing Agency,Numeric agency code
-FIDN,Feature identification number,The “Feature Object Identification Number” ranges from 1 to 232-2. The “Feature Object Identification Subdivision” ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
-FIDS,Feature identification subdivision,The “Feature Object Identification Number” ranges from 1 to 232-2. The “Feature Object Identification Subdivision” ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
+FIDN,Feature identification number,The Feature Object Identification Number ranges from 1 to 232-2. The Feature Object Identification Subdivision ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
+FIDS,Feature identification subdivision,The Feature Object Identification Number ranges from 1 to 232-2. The Feature Object Identification Subdivision ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
 LNAM,Long name,"Long name.  An encoding of AGEN, FIDN and FIDS used to uniquely identify this features within an S-57 file."
 LNAM_REFS,Long name references,List of long names of related features
 FFPT_RIND,Feature to feature object pointer relationship indicator,Relationship indicators for each of the LNAM_REFS relationships.
 CATLMK,Category of Landmark,Landmark type
 COLOUR,Color,"Color; must be encoded for all LIGHTS objects, except air obstruction lights or fog detector lights."
 COLPAT,Color pattern,Color pattern; Mandatory for ANY OBJECT that has more than one colour.
-CONDTN,Condition,"The attribute ‘condition’ encodes the various conditions of buildings and other constructions. The default ‘condition’ should be considered to be completed, undamaged and working normally. This attribute should, therefore, only be used to indicate objects whose condition is anything other than ‘normal’."
-CONRAD,"Conspicuous, radar",Radar conspicuous
-CONVIS,"Conspicuous, visually",Visually conspicuous
+CONDTN,Condition,"The attribute condition encodes the various conditions of buildings and other constructions. The default condition should be considered to be completed, undamaged and working normally. This attribute should, therefore, only be used to indicate objects whose condition is anything other than normal."
+CONRAD,Radar conspicuous,Indicates if an object is conspicuous by radar
+CONVIS,Visually conspicuous,Indicates if an object is visually conspicuous
 ELEVAT,Elevation,"The altitude of the ground level of an object, measured from a specified vertical datum."
 FUNCTN,Function,Object function
 HEIGHT,Height,"The value of the vertical distance to the highest point of the object, measured from a specifie d vertical datum."
-NATCON,Nature of construction,
+NATCON,Nature of construction,Construction status
 NOBJNM,Object name in national language,The attribute 'object name in national language' encodes the individual name of an object in the specified national language.
 OBJNAM,Object name,The individual name of an object.
 STATUS,Status,Object status
 VERACC,Vertical accuracy,"The best estimate of the vertical accuracy of heights, vertical distances and vertical clearances, excluding sounding measurements."
-VERDAT,Vertical datum,"This attribute is used to specify the datum to which both heights (vertical datum, see S- 57 Part 3) and soundings (sounding datum, see S-57 Part 3) are referred. When the vertical datum is unknown, such as water areas above locks, the value ‘local datum’ is to be used, and further details may be encoded using ‘INFORM’. The ï¿½ 0.3m approximation quoted in the “approximate” levels is somehow arbitrary and follows the British example of their definition for “approximate LAT”."
+VERDAT,Vertical datum,"This attribute is used to specify the datum to which both heights (vertical datum, see S- 57 Part 3) and soundings (sounding datum, see S-57 Part 3) are referred. When the vertical datum is unknown, such as water areas above locks, the value local datum is to be used, and further details may be encoded using INFORM. The 0.3m approximation quoted in the approximate levels is somehow arbitrary and follows the British example of their definition for approximate LAT."
 VERLEN,Vertical length,The total vertical length of an object.
 INFORM,Information,Textual information about the object.
 NINFOM,Information in national language,Textual information in national language characters

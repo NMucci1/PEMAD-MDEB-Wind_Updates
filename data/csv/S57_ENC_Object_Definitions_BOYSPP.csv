@@ -1,13 +1,13 @@
 name,alias,description
 OBJECTID,,
 RCID,Record identification number,The only constraint on usage of this subfield is that the concatenation of the RCID and RCNM subfields must be unique within the file in which the record is contained.
-PRIM,Object geometric primitive,
+PRIM,Object geometry,Object geometry type
 GRUP,Group,Used to separate feature objects into groups
 OBJL,Object label/code,A valid object label/code
 RVER,Record version,Record version is used for updating and contains the serial number of the record edition
 AGEN,Producing Agency,Numeric agency code
-FIDN,Feature identification number,The “Feature Object Identification Number” ranges from 1 to 232-2. The “Feature Object Identification Subdivision” ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
-FIDS,Feature identification subdivision,The “Feature Object Identification Number” ranges from 1 to 232-2. The “Feature Object Identification Subdivision” ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
+FIDN,Feature identification number,The Feature Object Identification Number ranges from 1 to 232-2. The Feature Object Identification Subdivision ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
+FIDS,Feature identification subdivision,The Feature Object Identification Number ranges from 1 to 232-2. The Feature Object Identification Subdivision ranges from 1 to 216-2. Both subfields are used to create an unique key for a feature object produced by the agency encoded in the AGEN subfield. The usage of the FIDN and FIDS subfields is not constrained and must be defined by the encoder.
 LNAM,Long name,"Long name.  An encoding of AGEN, FIDN and FIDS used to uniquely identify this features within an S-57 file."
 LNAM_REFS,Long name references,List of long names of related features
 FFPT_RIND,Feature to feature object pointer relationship indicator,Relationship indicators for each of the LNAM_REFS relationships.
@@ -15,11 +15,11 @@ BOYSHP,Buoy shape,Buoy shape; the principal shapes are those recommended in the 
 CATSPM,Category of special purpose mark,"A mark may be a beacon, a buoy, a signpost or may take another form. Value number 38 should be encoded using object class signal station, traffic (SISTAT)."
 COLOUR,Color,"Color; must be encoded for all LIGHTS objects, except air obstruction lights or fog detector lights."
 COLPAT,Color pattern,Color pattern; Mandatory for ANY OBJECT that has more than one colour.
-CONRAD,"Conspicuous, radar",Radar conspicuous
+CONRAD,Radar conspicuous,Indicates if an object is conspicuous by radar
 DATEND,Date end,The attribute 'date end' indicates the latest date on which an object (e.g. a buoy) will be present. This attribute is to be used to indicate the removal or cancellation of an object at a specific date in the future. See also 'periodic date end'
 DATSTA,Date start,"The attribute 'date, start' indicates the earliest date on which an object (e.g. a buoy) will be present. This attribute is to be used to indicate the deployment or implementation of an object at a specifi c date in the future. See also 'periodic date start'."
 MARSYS,Navigational marks,System of navigational marks
-NATCON,Nature of construction,
+NATCON,Nature of construction,Construction status
 NOBJNM,Object name in national language,The attribute 'object name in national language' encodes the individual name of an object in the specified national language.
 OBJNAM,Object name,The individual name of an object.
 PEREND,Periodic date end,The end of the active period for a seasonal object (e.g. a buoy). See also 'date end'.

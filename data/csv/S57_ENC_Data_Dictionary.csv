@@ -1,0 +1,268 @@
+column_name,code,value
+PRIM,1,Point
+PRIM,2,Line
+PRIM,3,Area
+PRIM,"255,",Object does not directly reference any geometry
+AGEN,550,"Office of Coast Survey, National Ocean Service, National Oceanic and Atmospheric Administration (NOS)"
+CATLMK,1,Cairn
+CATLMK,2,Cemetery
+CATLMK,3,Chimney
+CATLMK,4,Dish Aerial
+CATLMK,5,Flagstaff
+CATLMK,6,Flare Stack
+CATLMK,7,Mast
+CATLMK,8,Windsock
+CATLMK,9,Monument
+CATLMK,10,Column
+CATLMK,11,Memorial Plaque
+CATLMK,12,Obelisk
+CATLMK,13,Statue
+CATLMK,14,Cross
+CATLMK,15,Dome
+CATLMK,16,Radar Scanner
+CATLMK,17,Tower
+CATLMK,18,Windmill
+CATLMK,19,Windmotor
+CATLMK,20,Spire/Minaret
+CATLMK,21,Large rock or boulder on land
+CATLMK,22,Rock Pinnacle
+COLOUR,1,White
+COLOUR,2,Black
+COLOUR,3,Red
+COLOUR,4,Green
+COLOUR,5,Blue
+COLOUR,6,Yellow
+COLOUR,7,Grey 
+COLOUR,8,Brown
+COLOUR,9,Amber
+COLOUR,10,Violet
+COLOUR,11,Orange
+COLOUR,12,Magenta
+COLOUR,13,Pink
+COLPAT,1,Horizontal stripes
+COLPAT,2,Vertical stripes
+COLPAT,3,Diagonal stripes
+COLPAT,4,Squared
+COLPAT,5,Stripes (direction unknown)
+COLPAT,6,Border stripe
+CONDTN,1,Under construction
+CONDTN,2,Ruined
+CONDTN,3,Under reclamation
+CONDTN,4,Wingless
+CONDTN,5,Planned construction
+CONRAD,1,Radar conspicuous
+CONRAD,2,Not radar conspicuous
+CONRAD,3,Radar conspicuous (has radar reflector)
+CONVIS,1,Visually conspicuous
+CONVIS,2,Not visually conspicuous
+FUNCTN,1,No function/service of major interest
+FUNCTN,2,Harbormaster office
+FUNCTN,3,Custom office
+FUNCTN,4,Health office
+FUNCTN,5,Hospital
+FUNCTN,6,Post office
+FUNCTN,7,Hotel
+FUNCTN,8,Railway station
+FUNCTN,9,Police station
+FUNCTN,10,Water-police station
+FUNCTN,11,Pilot office
+FUNCTN,12,Pilot lookout
+FUNCTN,13,Bank office
+FUNCTN,14,Headquarters for district control
+FUNCTN,15,Transit shed/warehouse
+FUNCTN,16,Factory
+FUNCTN,17,Power station
+FUNCTN,18,Administrative
+FUNCTN,19,Educational facility
+FUNCTN,20,Church
+FUNCTN,21,Chapel
+FUNCTN,22,Temple
+FUNCTN,23,Pagoda
+FUNCTN,24,Shinto shrine
+FUNCTN,25,Buddhist temple
+FUNCTN,26,Mosque
+FUNCTN,27,Marabout
+FUNCTN,28,Lookout
+FUNCTN,29,Communication
+FUNCTN,30,Television
+FUNCTN,31,Radio
+FUNCTN,32,Radar
+FUNCTN,33,Light support
+FUNCTN,34,Microwave
+FUNCTN,35,Cooling
+FUNCTN,36,Observation
+FUNCTN,37,Timeball
+FUNCTN,38,Clock
+FUNCTN,39,Control
+FUNCTN,40,Airship mooring
+FUNCTN,41,Stadium
+FUNCTN,42,Bus station
+NATCON,1,Masonry
+NATCON,2,Concreted
+NATCON,3,Loose boulders
+NATCON,4,Hard surfaced
+NATCON,5,Unsurfaced
+NATCON,6,Wooden
+NATCON,7,Metal
+NATCON,8,Glass reinforced plastic
+NATCON,9,Painted
+STATUS,1,Permenant
+STATUS,2,Occasional
+STATUS,3,Recommended
+STATUS,4,Not in use
+STATUS,5,Periodic/intermittent
+STATUS,6,Reserved
+STATUS,7,Temporary
+STATUS,8,Private
+STATUS,9,Mandatory
+STATUS,10,Destroyed/ruined
+STATUS,11,Extinguished
+STATUS,12,Illuminated
+STATUS,13,Historic
+STATUS,14,Public
+STATUS,15,Synchronized
+STATUS,16,Watched
+STATUS,17,Un-watched
+STATUS,18,Existence doubtful
+VERDAT,1,Mean low water springs
+VERDAT,2,Mean lower low water springs
+VERDAT,3,Mean sea level
+VERDAT,4,Lowest low water
+VERDAT,5,Mean low water
+VERDAT,6,Lowest low water springs
+VERDAT,7,Approximate mean low water springs
+VERDAT,8,Indian spring low water
+VERDAT,9,Low water springs
+VERDAT,10,Approximate lowest astronomical tide
+VERDAT,11,Nearly lowest low water
+VERDAT,12,Mean lower low water
+VERDAT,13,Low water
+VERDAT,14,Approximate mean low water
+VERDAT,15,Approximate mean lower low water
+VERDAT,16,Mean high water
+VERDAT,17,Mean high water springs
+VERDAT,18,High water
+VERDAT,19,Approximate mean sea level
+VERDAT,20,High water springs
+VERDAT,21,Mean higher high water
+VERDAT,22,Equinoctial spring low water
+VERDAT,23,Lowest astronomical tide
+VERDAT,24,Local datum
+VERDAT,25,International Great Lakes Datum 1985
+VERDAT,26,Mean water level
+VERDAT,27,Lower low water large tide
+VERDAT,28,Higher high water large tide
+VERDAT,29,Nearly highest high water
+VERDAT,30,highest astronomical tide (HAT)
+CATCBL,1,Power line
+CATCBL,2,Telephone/telegraph
+CATCBL,3,Transmission line
+CATCBL,4,Telephone
+CATCBL,5,Telegraph
+CATCBL,6,Mooring cable/chain
+CATOFP,1,oil derrick/rig
+CATOFP,2,production platform
+CATOFP,3,observation/research platform
+CATOFP,4,articulated loading platform (ALP)
+CATOFP,5,single anchor leg mooring (SALM)
+CATOFP,6,mooring tower
+CATOFP,7,artificial island
+CATOFP,8,"floating production, storage and off-loading vessel (FPSO)"
+CATOFP,9,accommodation platform
+CATOFP,10,"navigation, communication and control buoy (NCCB)"
+PRODCT,1,Oil
+PRODCT,2,Gas
+PRODCT,3,Water
+PRODCT,4,Stone
+PRODCT,5,Coal
+PRODCT,6,Ore
+PRODCT,7,Chemicals
+PRODCT,8,Drinking water
+PRODCT,9,Milk
+PRODCT,10,Bauxite
+PRODCT,11,Coke
+PRODCT,12,Iron ingots
+PRODCT,13,Salt
+PRODCT,14,Sand
+PRODCT,15,Timber
+PRODCT,16,Sawdust/wood chips
+PRODCT,17,Scrap metal
+PRODCT,18,Liquified natural gas (LNG)
+PRODCT,19,Liquified petroleum gas (LPG)
+PRODCT,20,Wine
+PRODCT,21,Cement
+PRODCT,22,Grain
+BOYSHP,1,"Conical (nun, ogival)"
+BOYSHP,2,Can (cylindrical)
+BOYSHP,3,Spherical
+BOYSHP,4,Pillar
+BOYSHP,5,Spar (spindle)
+BOYSHP,6,Barrel (tun)
+BOYSHP,7,Super-buoy
+BOYSHP,8,Ice buoy
+CATSPM,1,firing danger area mark
+CATSPM,2,target mark
+CATSPM,3,marker ship mark
+CATSPM,4,degaussing range mark
+CATSPM,5,barge mark
+CATSPM,6,cable mark
+CATSPM,7,spoil ground mark
+CATSPM,8,outfall mark
+CATSPM,9,ODAS (Ocean-Data- Acquisition-System)
+CATSPM,10,recording mark
+CATSPM,11,seaplane anchorage mark
+CATSPM,12,recreation zone mark
+CATSPM,13,private mark
+CATSPM,14,mooring mark 431.5
+CATSPM,15,LANBY (Large Automatic Navigational Buoy)
+CATSPM,16,leading mark
+CATSPM,17,measured distance mark
+CATSPM,18,notice mark
+CATSPM,19,TSS mark (Traffic Separation Scheme)
+CATSPM,20,anchoring prohibited mark
+CATSPM,21,berthing prohibited mark
+CATSPM,22,overtaking prohibited mark
+CATSPM,23,two-way traffic prohibited mark
+CATSPM,24,reduced wake mark
+CATSPM,25,speed limit mark
+CATSPM,26,stop mark
+CATSPM,27,general warning mark
+CATSPM,28,sound ships siren mark
+CATSPM,29,restricted vertical clearance mark
+CATSPM,30,maximum vessels draught mark
+CATSPM,31,restricted horizontal clearance mark
+CATSPM,32,strong current warning mark
+CATSPM,33,berthing permitted mark
+CATSPM,34,overhead power cable mark
+CATSPM,35,channel edge gradient mark
+CATSPM,36,telephone mark
+CATSPM,37,ferry crossing mark
+CATSPM,38,marine traffic lights
+CATSPM,39,pipeline mark
+CATSPM,40,anchorage mark
+CATSPM,41,clearing mark
+CATSPM,42,control mark
+CATSPM,43,diving mark
+CATSPM,44,refuge beacon
+CATSPM,45,foul ground mark
+CATSPM,46,yachting mark
+CATSPM,47,heliport mark
+CATSPM,48,GPS mark
+CATSPM,49,seaplane landing mark
+CATSPM,50,entry prohibited mark
+CATSPM,51,work in progress mark
+CATSPM,52,mark with unknown purpose
+CATSPM,53,wellhead mark
+CATSPM,54,channel separation mark
+CATSPM,55,marine farm mark
+CATSPM,56,artificial reef mark
+MARSYS,1,IALA A
+MARSYS,2,IALA B
+MARSYS,3,Modified US
+MARSYS,4,Old US
+MARSYS,5,US intracoastal waterway
+MARSYS,6,US uniform state
+MARSYS,7,US western rivers
+MARSYS,8,SIGNI
+MARSYS,9,No system
+MARSYS,10,Other system
