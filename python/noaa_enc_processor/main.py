@@ -48,7 +48,7 @@ def run_workflow():
     # 5. Update the AGOL field names (aliases) and descriptions for increased user interoperability
     field_updater.update_field_definitions(
         gis=gis,
-        map = config.item_id_csv_map
+        mapper = config.item_id_csv_map
     )
 
 # Run the workflow

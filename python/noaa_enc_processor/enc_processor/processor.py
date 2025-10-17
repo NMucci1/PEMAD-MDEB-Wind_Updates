@@ -11,6 +11,7 @@ import os
 import fiona
 from arcgis.features import FeatureLayerCollection
 from .enc_preprocessor import read_enc_layer
+from .code_mapper import map_column_codes_with_logging
 
 def process_and_update_features(gis, data_dir, feature_config):
     """
@@ -88,9 +89,21 @@ def process_and_update_features(gis, data_dir, feature_config):
             # Combine all alike features into one gdf
             full_gdf = gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True), crs=gdf_list[0].crs)
             print(f"[{name}] Successfully combined {len(full_gdf)} total features.")
+            print(gdf.head())
         except Exception as e:
             print(f"[{name}] failed to combine GeoDataFrames: {e}")
             continue
+        
+        mapping_csv_path = feature_config[name].get("mapping_csv")
+
+        # Call mapping function to convert any coded data into a non-coded, readable value    
+        if mapping_csv_path:
+            # If a mapping file is defined in the config, call the function
+            # and overwrite full_gdf with the processed result.
+            full_gdf = map_column_codes_with_logging(full_gdf, mapping_csv_path)
+        else:
+            print(f"[{name}] No mapping CSV configured. Proceeding with original data.")
+
         # Define AGOL item ID
         agol_id = feature_config[name].get("agol_item_id")
         if not agol_id:

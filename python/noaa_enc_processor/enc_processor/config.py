@@ -25,6 +25,9 @@ buoy_agol_id = os.getenv("BUOY_ITEM_ID")
 cable_agol_id = os.getenv("CABLE_ITEM_ID")
 substation_agol_id = os.getenv("SUBSTATION_ITEM_ID")
 
+# Define the file path for the S-57 data dictionary CSV
+data_dict_csv_path = base_dir / "data" / "csv" / "S57_ENC_Data_Dictionary.csv"
+
 # Define the features to extract from ENC
 extraction_features = {
     "Wind_Turbines": {
@@ -33,7 +36,8 @@ extraction_features = {
         "filter_val": "19",  # Turbines are 19 catlmk
         "output_name": "NOAA_ENC_WTG",
         "agol_item_id": turbine_agol_id,
-        "agol_layer_index": 0},
+        "agol_layer_index": 0,
+        "mapping_csv": data_dict_csv_path},
 
     "Submarine_Cables":{
         "layer_name": "CBLSUB", # Name of ENC submarine cable layer  
@@ -41,7 +45,8 @@ extraction_features = {
         "filter_val": 1, # Power cables are 1 catcbl
         "output_name": "NOAA_ENC_PowerCables",
          "agol_item_id": cable_agol_id,
-         "agol_layer_index": 0},
+         "agol_layer_index": 0,
+         "mapping_csv": data_dict_csv_path},
     
     "Offshore_Substations":{
         "layer_name": "OFSPLF", # Name of ENC offshore substation layer  
@@ -49,7 +54,8 @@ extraction_features = {
         "filter_val": None,
         "output_name": "NOAA_ENC_OSS",
         "agol_item_id": substation_agol_id,
-        "agol_layer_index": 0},
+        "agol_layer_index": 0,
+        "mapping_csv": data_dict_csv_path},
 
     "Buoys":{
         "layer_name": "BOYSPP", # Name of ENC buoy layer 
@@ -57,10 +63,11 @@ extraction_features = {
         "filter_val": None,
         "output_name": "NOAA_ENC_Buoys",
         "agol_item_id": buoy_agol_id,
-        "agol_layer_index": 0},
+        "agol_layer_index": 0,
+        "mapping_csv": data_dict_csv_path},
 }
 
-# Define file path for the S-57 data dictionary field description CSVs
+# Define file path for the S-57 field description CSVs
 turbine_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_LNDMRK.csv"
 buoy_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_BOYSPP.csv"
 cable_csv_path = base_dir / "data" / "csv" / "S57_ENC_Object_Definitions_CBLSUB.csv"
