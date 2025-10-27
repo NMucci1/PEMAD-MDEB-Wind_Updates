@@ -2,7 +2,7 @@ column_name,code,value
 PRIM,1,Point
 PRIM,2,Line
 PRIM,3,Area
-PRIM,"255,",Object does not directly reference any geometry
+PRIM,255,Object does not directly reference any geometry
 AGEN,550,"Office of Coast Survey, National Ocean Service, National Oceanic and Atmospheric Administration (NOS)"
 CATLMK,1,Cairn
 CATLMK,2,Cemetery

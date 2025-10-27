@@ -11,7 +11,7 @@ import os
 import fiona
 from arcgis.features import FeatureLayerCollection
 from .enc_preprocessor import read_enc_layer
-from .code_mapper import map_column_codes_with_logging
+from .code_mapper import map_column_codes
 
 def process_and_update_features(gis, data_dir, feature_config):
     """
@@ -100,7 +100,7 @@ def process_and_update_features(gis, data_dir, feature_config):
         if mapping_csv_path:
             # If a mapping file is defined in the config, call the function
             # and overwrite full_gdf with the processed result.
-            full_gdf = map_column_codes_with_logging(full_gdf, mapping_csv_path)
+            full_gdf = map_column_codes(full_gdf, mapping_csv_path)
         else:
             print(f"[{name}] No mapping CSV configured. Proceeding with original data.")
 
