@@ -94,6 +94,41 @@ def process_and_update_features(gis, data_dir, feature_config):
             print(f"[{name}] failed to combine GeoDataFrames: {e}")
             continue
         
+        # Remove duplicate features in the wind_turbines layer using the FIDN column
+        # Check if the current feature set is the one containing Wind Turbines
+        if name == "Wind_Turbines" and 'FIDN' in full_gdf.columns:
+            print(f"[{name}] Detected Wind Turbines. Applying FIDN-based deduplication...")
+            
+            # Identify the indexes of the rows to keep
+            non_duplicate_index = full_gdf.drop_duplicates(subset=['FIDN'], keep='first').index
+            
+            # Filter to get only the duplicate rows for inspection
+            duplicate_rows_gdf = full_gdf.loc[~full_gdf.index.isin(non_duplicate_index)]
+            
+            # Update duplicates_removed count
+            duplicates_removed = len(duplicate_rows_gdf)
+            
+            if duplicates_removed > 0:
+                print(f"[{name}] Found {duplicates_removed} duplicate features.")
+                print(f"[{name}] Inspecting 'source_file' column for duplicates:")
+                print(duplicate_rows_gdf[['FIDN', 'source_file']])
+            
+            # Remove duplicates: Apply the filtering to keep only one record per FIDN
+            full_gdf = full_gdf.drop_duplicates(subset=['FIDN'], keep='first')
+            
+            # Update deduplicated_count
+            deduplicated_count = len(full_gdf)
+            
+            # Summary Log for the deduplicated layer
+            print(f"[{name}] Deduplication complete. {duplicates_removed} features removed. {deduplicated_count} features retained.")
+            
+        elif name == "Wind_Turbines" and 'FIDN' not in full_gdf.columns:
+            print(f"[{name}] Warning: Wind_Turbines layer found, but 'FIDN' column is missing. Skipping deduplication.")
+            
+        else:
+            # For all other layers, there are no duplicates. 
+            print(f"[{name}] Not the target layer. Skipping deduplication.")
+            
         mapping_csv_path = feature_config[name].get("mapping_csv")
 
         # Call mapping function to convert any coded data into a non-coded, readable value    
