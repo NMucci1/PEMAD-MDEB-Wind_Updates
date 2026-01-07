@@ -19,14 +19,14 @@ def run_workflow():
     load_dotenv(dotenv_path=env_path)
     # Get credentials securely using os.getenv()
     portal_url = os.getenv("ARCGIS_URL")
-    client_id = os.getenv("CLIENT_ID")
-    client_secret = os.getenv("CLIENT_SECRET")
+    client_id = os.getenv("ARCGIS_CLIENT_ID")
+    client_secret = os.getenv("ARCGIS_CLIENT_SECRET")
 
     # 2. Connect to ArcGIS Online
     try:
         print("---  Connecting to ArcGIS Online...  ---")
-        #gis = GIS(url=portal_url, client_id=client_id, client_secret=client_secret)
-        gis = GIS("PRO")
+        gis = GIS(url=portal_url, client_id=client_id, client_secret=client_secret)
+        #gis = GIS("PRO")
         print("---  Successfully connected  ---")
     except Exception as e:
         print(f"Could not connect to ArcGIS Online. Error: {e}")
