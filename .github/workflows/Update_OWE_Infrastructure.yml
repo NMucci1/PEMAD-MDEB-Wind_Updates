@@ -2,22 +2,21 @@ name: Offshore Wind Infrastructure Update
 
 on:
   #schedule:
-    # This runs at 00:00 UTC every day
-    #- cron: '0 0 * * *'
+    # Runs at 00:00 UTC every day
+  #  - cron: '0 0 * * *'
   workflow_dispatch: # Allows manual run for testing
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  update-offshore-infrastructure:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
 
-      # 2. Setup Conda environment
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -27,29 +26,36 @@ jobs:
           activate-environment: arcgis-api
           auto-activate-base: false
 
-      # 3. Install dependencies
       - name: Install dependencies
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge gdal=3.11.4 -y --quiet
-          pip install arcgis==2.4.1.* pandas numpy requests geopandas fiona python-dotenv
+          # Install spatial C-libraries via Conda for stability
+          conda install -c conda-forge gdal=3.10.0 geopandas fiona -y --quiet
+          # Install remaining logic/API libraries via Pip
+          pip install arcgis==2.4.1.* pandas numpy requests python-dotenv
 
-      # 4. Run Script
       - name: Execute Python script
         shell: bash -l {0}
         run: python python/noaa_enc_processor/main.py
         env:
+          PYTHONDONTWRITEBYTECODE: 1
           ARCGIS_URL: ${{ secrets.ARCGIS_URL }}
           ARCGIS_CLIENT_ID: ${{ secrets.ARCGIS_CLIENT_ID }}
           ARCGIS_CLIENT_SECRET: ${{ secrets.ARCGIS_CLIENT_SECRET }}
 
-      # Pushes any updated files back to GitHub
-      - name: Commit and Push changes
+      - name: Setup Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Automated update: $(date)" || echo "No changes to commit"
-          git push
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+      - name: Commit and Push ENC Updates
+        run: |
+          git add data-raw/ENC/
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated update: New NOAA ENC data"
+            git push origin main
+          else
+            echo "No changes detected in data-raw/ENC, skipping push."
+          fi
         
           
