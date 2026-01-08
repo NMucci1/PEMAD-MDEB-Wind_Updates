@@ -4,7 +4,6 @@
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
 # Create a list of ENCs to download
 charts_to_download = ["US4NY1BY.zip", "US4RI1CB.zip", "US4MA1CC.zip", "US4MA1CD.zip", 
@@ -18,8 +17,12 @@ base_dir = Path(__file__).resolve().parent.parent.parent.parent
 target_folder_path = base_dir / "data-raw" / "ENC"
 
 # Get AGOL item ID credentials securely using os.getenv()
-env_path = Path.home()/'.config'/'secrets'/'.env' 
-load_dotenv(dotenv_path=env_path)
+try:
+    from dotenv import load_dotenv
+    env_path = Path.home()/'.config'/'secrets'/'.env' 
+    load_dotenv(dotenv_path=env_path)
+except ImportError:
+    pass
 turbine_agol_id = os.getenv("TURBINE_ITEM_ID")
 buoy_agol_id = os.getenv("BUOY_ITEM_ID")
 cable_agol_id = os.getenv("CABLE_ITEM_ID")

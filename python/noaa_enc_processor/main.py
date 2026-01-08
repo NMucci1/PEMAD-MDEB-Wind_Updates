@@ -3,8 +3,6 @@
 #############################################
 
 import os
-from dotenv import load_dotenv
-from pathlib import Path
 from arcgis.gis import GIS
 from enc_processor import config, downloader, processor, field_updater
 
@@ -15,8 +13,11 @@ def run_workflow():
 
     """
     # 1. Define .env variables to log into AGOL
-    env_path = Path.home()/'.config'/'secrets'/'.env' 
-    load_dotenv(dotenv_path=env_path)
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path = os.path.expandvars(r"%USERPROFILE%\.config\secrets\.env"))
+    except ImportError:
+        pass
     # Get credentials securely using os.getenv()
     portal_url = os.getenv("ARCGIS_URL")
     client_id = os.getenv("ARCGIS_CLIENT_ID")

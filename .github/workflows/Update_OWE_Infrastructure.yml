@@ -42,6 +42,10 @@ jobs:
           ARCGIS_URL: ${{ secrets.ARCGIS_URL }}
           ARCGIS_CLIENT_ID: ${{ secrets.ARCGIS_CLIENT_ID }}
           ARCGIS_CLIENT_SECRET: ${{ secrets.ARCGIS_CLIENT_SECRET }}
+          BUOY_ITEM_ID: ${{ secrets.BUOY_ITEM_ID }}
+          CABLE_ITEM_ID: ${{ secrets.CABLE_ITEM_ID }}
+          SUBSTATION_ITEM_ID: ${{ secrets.SUBSTATION_ITEM_ID }}
+          TURBINE_ITEM_ID: ${{ secrets.TURBINE_ITEM_ID }}
 
       - name: Setup Git
         run: |
