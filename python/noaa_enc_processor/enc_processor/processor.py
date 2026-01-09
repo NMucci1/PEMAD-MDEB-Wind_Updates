@@ -162,18 +162,14 @@ def process_and_update_features(gis, data_dir, feature_config):
             # Convert gdf to spatially enabled dataframe
             print(f"[{name}] Converting to Spatially Enabled DataFrame...")
             sdf = pd.DataFrame.spatial.from_geodataframe(full_gdf)
-            
-            # Delete existing features from AGOL layer using a standard edit request
-            print(f"[{name}] Clearing all existing features in AGOL layer...")
-            target_layer.delete_features(where="1=1")
+
+            # Delete existing features from AGOL layer
+            print(f"[{name}] Truncating all existing features in AGOL layer...")
+            target_layer.manager.truncate()
             
             # Add new features to layer using spatially enabled dataframe
             print(f"[{name}] Appending {len(sdf)} new features to AGOL layer...")
-            # Convert SDF to a list of feature dictionaries
-            features_to_add = sdf.spatial.to_featureset().features
-            # Add new features
-            print(f"[{name}] Appending {len(features_to_add)} new features to AGOL layer...")
-            result = target_layer.edit_features(adds=features_to_add)
+            result = target_layer.edit_features(adds=sdf)
             
             # Check results
             add_results = result.get('addResults', [])
