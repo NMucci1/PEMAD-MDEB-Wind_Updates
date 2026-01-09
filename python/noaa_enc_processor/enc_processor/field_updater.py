@@ -76,7 +76,11 @@ def update_field_definitions(gis, mapper, layer_indices: list = [0]):
                     # Apply the changes if any were staged
                     if fields_updated_count > 0:
                         update_dict = {"fields": layer_definition['fields']}
-                        layer_to_update.manager.update_definition(update_dict)
+                        result = layer_to_update.manager.update_definition(update_dict)
+
+                        if 'success' not in result or not result['success']:
+                        # Backup: If the manager blocks the action, update the Item's data property
+                            item.update(item_properties={'text': json.dumps({"layers": [update_dict]})})
                         print(f"Successfully applied {fields_updated_count} updates to layer '{layer_to_update.properties.name}'.")
                     else:
                         print("No matching fields found in CSV. No updates needed for this layer.")

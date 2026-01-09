@@ -1,9 +1,9 @@
 name: Offshore Wind Infrastructure Update
 
 on:
-  #schedule:
-    # Runs at 00:00 UTC every day
-  #  - cron: '0 0 * * *'
+  schedule:
+    # 3:15 AM EST every Monday 
+    - cron: '15 8 * * 1'
   workflow_dispatch: # Allows manual run for testing
 
 permissions:
@@ -40,8 +40,8 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: 1
           ARCGIS_URL: ${{ secrets.ARCGIS_URL }}
-          ARCGIS_CLIENT_ID: ${{ secrets.ARCGIS_CLIENT_ID }}
-          ARCGIS_CLIENT_SECRET: ${{ secrets.ARCGIS_CLIENT_SECRET }}
+          ARCGIS_USERNAME: ${{ secrets.ARCGIS_USERNAME }}
+          ARCGIS_PASSWORD: ${{ secrets.ARCGIS_PASSWORD }}
           BUOY_ITEM_ID: ${{ secrets.BUOY_ITEM_ID }}
           CABLE_ITEM_ID: ${{ secrets.CABLE_ITEM_ID }}
           SUBSTATION_ITEM_ID: ${{ secrets.SUBSTATION_ITEM_ID }}
