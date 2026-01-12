@@ -147,29 +147,51 @@ def process_and_update_features(gis, data_dir, feature_config):
             
         try:
             print(f"[{name}] Connecting to AGOL item {agol_id}...")
-            # Get AGOL item using item ID
             item = gis.content.get(agol_id)
             flc = FeatureLayerCollection.fromitem(item)
             agol_layer_index = feature_config[name].get("agol_layer_index", 0)
-            # Get target layer to be updated
             target_layer = flc.layers[agol_layer_index]
 
-            # Define layer coordinate system and reproject data to match 
-            target_crs_wkid = target_layer.properties.extent['spatialReference']['wkid']
-            print(f"[{name}] Reprojecting data to match AGOL layer (EPSG:{target_crs_wkid})...")
+            # Set CRS
+            # Checks layer properties first, then extent, then defaults to 3857
+            target_crs_wkid = None
+            props = target_layer.properties
+
+            if 'spatialReference' in props:
+                target_crs_wkid = props['spatialReference'].get('wkid')
+            
+            if not target_crs_wkid and props.get('extent'):
+                target_crs_wkid = props['extent'].get('spatialReference', {}).get('wkid')
+
+            if not target_crs_wkid:
+                print(f"[{name}] Warning: Could not detect WKID. Defaulting to 3857.")
+                target_crs_wkid = 3857
+            
+            print(f"[{name}] Target WKID: {target_crs_wkid}")
+
+            # Reproject data to match target layer
             full_gdf = full_gdf.to_crs(epsg=target_crs_wkid)
             
-            # Convert gdf to spatially enabled dataframe
+            # Rename 'geometry' to 'SHAPE' for AGOL compatibility
+            if 'geometry' in full_gdf.columns:
+                full_gdf = full_gdf.rename(columns={'geometry': 'SHAPE'}).set_geometry('SHAPE')
+
+            # Convert to Spatially Enabled DataFrame
             print(f"[{name}] Converting to Spatially Enabled DataFrame...")
             sdf = pd.DataFrame.spatial.from_geodataframe(full_gdf)
-
-            # Delete existing features from AGOL layer
+            
+            # Set the Spatial Reference on the SDF
+            sdf.spatial.sr = {'wkid': int(target_crs_wkid)}
+            
+            # Truncate and Upload
             print(f"[{name}] Truncating all existing features in AGOL layer...")
             target_layer.manager.truncate()
             
-            # Add new features to layer using spatially enabled dataframe
-            print(f"[{name}] Appending {len(sdf)} new features to AGOL layer...")
-            result = target_layer.edit_features(adds=sdf)
+            print(f"[{name}] Converting to FeatureSet for upload...")
+            features_to_add = sdf.spatial.to_featureset().features
+            
+            print(f"[{name}] Appending {len(features_to_add)} new features to AGOL layer...")
+            result = target_layer.edit_features(adds=features_to_add)
             
             # Check results
             add_results = result.get('addResults', [])
@@ -178,8 +200,8 @@ def process_and_update_features(gis, data_dir, feature_config):
             if not add_errors:
                 print(f"[{name}] AGOL update successful.")
             else:
-                print(f"[{name}] failed to add {len(add_errors)} features.")
+                print(f"[{name}] Failed to add {len(add_errors)} features.")
                 print(f"Example error: {add_errors[0]}")
 
         except Exception as e:
-            print(f"[{name}] An unexpected error occurred during the AGOL update process: {e}")
+            print(f"[{name}] An unexpected error occurred: {e}")
