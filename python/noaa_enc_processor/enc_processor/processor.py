@@ -9,6 +9,8 @@ import zipfile
 import tempfile
 import os
 import fiona
+import json
+from arcgis.features import FeatureSet
 from arcgis.features import FeatureLayerCollection
 from .enc_preprocessor import read_enc_layer
 from .code_mapper import map_column_codes
@@ -151,57 +153,48 @@ def process_and_update_features(gis, data_dir, feature_config):
             flc = FeatureLayerCollection.fromitem(item)
             agol_layer_index = feature_config[name].get("agol_layer_index", 0)
             target_layer = flc.layers[agol_layer_index]
-
-            # Set CRS
-            # Checks layer properties first, then extent, then defaults to 3857
-            target_crs_wkid = None
+            
+            # Identify Target WKID
             props = target_layer.properties
-
-            if 'spatialReference' in props:
-                target_crs_wkid = props['spatialReference'].get('wkid')
+            target_crs_wkid = props.get('spatialReference', {}).get('wkid') or \
+                              props.get('extent', {}).get('spatialReference', {}).get('wkid') or 3857
             
-            if not target_crs_wkid and props.get('extent'):
-                target_crs_wkid = props['extent'].get('spatialReference', {}).get('wkid')
+            print(f"[{name}] Target WKID detected: {target_crs_wkid}")
 
-            if not target_crs_wkid:
-                print(f"[{name}] Warning: Could not detect WKID. Defaulting to 3857.")
-                target_crs_wkid = 3857
-            
-            print(f"[{name}] Target WKID: {target_crs_wkid}")
-
-            # Reproject data to match target layer
+            # Reproject and clean GeoDataFrame
             full_gdf = full_gdf.to_crs(epsg=target_crs_wkid)
-            
-            # Rename 'geometry' to 'SHAPE' for AGOL compatibility
-            if 'geometry' in full_gdf.columns:
-                full_gdf = full_gdf.rename(columns={'geometry': 'SHAPE'}).set_geometry('SHAPE')
+            full_gdf = full_gdf[full_gdf.geometry.notnull()] # Remove any empty geometries
 
-            # Convert to Spatially Enabled DataFrame
-            print(f"[{name}] Converting to Spatially Enabled DataFrame...")
-            sdf = pd.DataFrame.spatial.from_geodataframe(full_gdf)
-            
-            # Set the Spatial Reference on the SDF
-            sdf.spatial.sr = {'wkid': int(target_crs_wkid)}
+            # Convert to FeatureSet via GeoJSON
+            # This is more stable than SEDF in GitHub Actions/Linux
+            print(f"[{name}] Converting to FeatureSet...")
+            geojson_payload = json.loads(full_gdf.to_json())
+            fset = FeatureSet.from_geojson(geojson_payload)
+
+            # Manual Spatial Reference Injection
+            target_sr = {'wkid': int(target_crs_wkid)}
+            for feat in fset.features:
+                if feat.geometry:
+                    feat.geometry['spatialReference'] = target_sr
             
             # Truncate and Upload
             print(f"[{name}] Truncating all existing features in AGOL layer...")
             target_layer.manager.truncate()
             
-            print(f"[{name}] Converting to FeatureSet for upload...")
-            features_to_add = sdf.spatial.to_featureset().features
-            
-            print(f"[{name}] Appending {len(features_to_add)} new features to AGOL layer...")
-            result = target_layer.edit_features(adds=features_to_add)
+            print(f"[{name}] Appending {len(fset.features)} new features to AGOL layer...")
+            result = target_layer.edit_features(adds=fset.features)
             
             # Check results
             add_results = result.get('addResults', [])
-            add_errors = [r['error'] for r in add_results if not r['success']]
+            success_count = sum(1 for r in add_results if r.get('success'))
             
-            if not add_errors:
-                print(f"[{name}] AGOL update successful.")
+            if success_count == len(fset.features):
+                print(f"[{name}] AGOL update successful. {success_count} features added.")
             else:
-                print(f"[{name}] Failed to add {len(add_errors)} features.")
-                print(f"Example error: {add_errors[0]}")
+                errors = [r.get('error') for r in add_results if not r.get('success')]
+                print(f"[{name}] Warning: Only {success_count}/{len(fset.features)} succeeded.")
+                if errors:
+                    print(f"First error: {errors[0]}")
 
         except Exception as e:
             print(f"[{name}] An unexpected error occurred: {e}")
