@@ -60,6 +60,7 @@ jobs:
           CABLE_ITEM_ID: ${{ secrets.CABLE_ITEM_ID }}
           SUBSTATION_ITEM_ID: ${{ secrets.SUBSTATION_ITEM_ID }}
           TURBINE_ITEM_ID: ${{ secrets.TURBINE_ITEM_ID }}
+          BOULDER_ITEM_ID: ${{ secrets.BOULDER_ITEM_ID }}
 
       - name: Setup Git
         run: |
