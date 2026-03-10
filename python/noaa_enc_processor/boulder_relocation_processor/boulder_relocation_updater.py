@@ -1,3 +1,8 @@
+######################################################
+## FUNCTION TO PROCESS BOULDER RELOCATION FILES AND ##
+##   UPDATE EXISTING AGOL HOSTED FEATURE SERVICES   ##
+######################################################
+
 import io
 import zipfile
 import requests

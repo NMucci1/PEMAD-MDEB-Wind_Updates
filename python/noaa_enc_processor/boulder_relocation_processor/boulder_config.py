@@ -1,3 +1,10 @@
+#############################################
+##        CONFIGURATION VARIABLES          ##
+#############################################
+
+from pathlib import Path
+import os
+
 urls_to_process = [
      "https://www.quintham.com//EMIN/8/23/246/GeoJson.zip",
      "https://www.quintham.com//EMIN/8/28/130/GeoJson.zip",
