@@ -5,6 +5,7 @@
 import os
 from arcgis.gis import GIS
 from enc_processor import config, downloader, processor, field_updater
+from boulder_relocation_processor import boulder_config, boulder_relocation_updater
 
 def run_workflow():
     """
@@ -49,6 +50,13 @@ def run_workflow():
     field_updater.update_field_definitions(
         gis=gis,
         mapper = config.item_id_csv_map
+    )
+
+    # 6. Update the AGOL boulder relocation feature service
+    boulder_relocation_updater.update_boulder_layer(
+        gis=gis,
+        item_id = boulder_config.boulder_agol_id,
+        urls = boulder_config.urls_to_process
     )
 
 # Run the workflow
