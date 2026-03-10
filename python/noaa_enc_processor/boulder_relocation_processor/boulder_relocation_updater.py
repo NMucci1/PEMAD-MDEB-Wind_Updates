@@ -7,50 +7,56 @@ import io
 import zipfile
 import requests
 import pandas as pd
+import json
+import os
+import tempfile
 from arcgis.gis import GIS
 from arcgis.features import FeatureLayerCollection
 
 def update_boulder_layer(gis, item_id, urls):
-    """
-    Downloads zipped GeoJSONs, merges them in memory, and overwrites an AGOL layer.
-      """
-    all_dfs = []
+    all_features = []
 
+    # Collect all features from all URLs into one list
     for url in urls:
         print(f"Downloading: {url}")
         response = requests.get(url)
-        
         if response.status_code == 200:
-            # Open the zip file in memory
             with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-                # Assuming there is one .geojson file per zip
                 for filename in z.namelist():
                     if filename.endswith('.geojson'):
                         with z.open(filename) as f:
-                            # Read GeoJSON into a Spatially Enabled DataFrame
-                            geojson_data = f.read().decode('utf-8')
-                            # Temporary save or direct load depending on pandas version
-                            # SEDF can read directly from JSON strings via GeoAccessor
-                            df = pd.read_json(io.StringIO(geojson_data))
-                            all_dfs.append(df)
+                            data = json.load(f)
+                            all_features.extend(data['features'])
         else:
-            print(f"Failed to download {url}: {response.status_code}")
+            print(f"Failed to download {url}")
 
-    if not all_dfs:
-        print("No data was collected.")
+    if not all_features:
+        print("No data found in URLs.")
         return
 
-    # Merge all dataframes into one
-    final_df = pd.concat(all_dfs, ignore_index=True)
+    # Create a combined GeoJSON object
+    combined_geojson = {
+        "type": "FeatureCollection",
+        "features": all_features
+    }
 
-    # Get the existing Feature Layer Item
-    target_item = gis.content.get(item_id)
-    flc = FeatureLayerCollection.fromitem(target_item)
+    # Save to a temporary file
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_file_path = os.path.join(temp_dir, "data.geojson")
+        with open(temp_file_path, 'w') as f:
+            json.dump(combined_geojson, f)
 
-    # Overwrite the service
-    print(f"Overwriting layer: {target_item.title}...")
-    
-    # Using the manager to overwrite with the dataframe directly
-    flc.manager.overwrite(final_df)
-    
+        # Access the existing item
+        target_item = gis.content.get(item_id)
+        
+        # Check if the item is empty/new
+        print(f"Syncing data to: {target_item.title}...")
+        flc = FeatureLayerCollection.fromitem(target_item)
+        
+        try:
+            result = flc.manager.overwrite(temp_file_path)
+            print(f"Successfully initialized/updated layer: {result}")
+        except Exception as e:
+            print(f"Error during sync: {e}")
+            
     print("Update complete.")
