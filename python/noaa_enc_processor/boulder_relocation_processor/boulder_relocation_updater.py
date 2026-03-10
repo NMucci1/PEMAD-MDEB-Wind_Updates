@@ -6,57 +6,47 @@
 import io
 import zipfile
 import requests
-import pandas as pd
 import json
-import os
-import tempfile
 from arcgis.gis import GIS
-from arcgis.features import FeatureLayerCollection
 
 def update_boulder_layer(gis, item_id, urls):
     all_features = []
 
-    # Collect all features from all URLs into one list
+    # Download and parse GeoJSONs into features
     for url in urls:
         print(f"Downloading: {url}")
-        response = requests.get(url)
-        if response.status_code == 200:
+        try:
+            response = requests.get(url)
             with zipfile.ZipFile(io.BytesIO(response.content)) as z:
                 for filename in z.namelist():
                     if filename.endswith('.geojson'):
                         with z.open(filename) as f:
                             data = json.load(f)
+                            # Add all features to master list
                             all_features.extend(data['features'])
-        else:
-            print(f"Failed to download {url}")
+        except Exception as e:
+            print(f"Failed to process {url}: {e}")
 
     if not all_features:
-        print("No data found in URLs.")
+        print("No features found to upload.")
         return
 
-    # Create a combined GeoJSON object
-    combined_geojson = {
-        "type": "FeatureCollection",
-        "features": all_features
-    }
+    # Get the specific layer object
+    target_item = gis.content.get(item_id)
+    flayer = target_item.layers[0] 
 
-    # Save to a temporary file
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_file_path = os.path.join(temp_dir, "data.geojson")
-        with open(temp_file_path, 'w') as f:
-            json.dump(combined_geojson, f)
+    print(f"Pushing {len(all_features)} features to: {target_item.title}...")
 
-        # Access the existing item
-        target_item = gis.content.get(item_id)
-        
-        # Check if the item is empty/new
-        print(f"Syncing data to: {target_item.title}...")
-        flc = FeatureLayerCollection.fromitem(target_item)
-        
-        try:
-            result = flc.manager.overwrite(temp_file_path)
-            print(f"Successfully initialized/updated layer: {result}")
-        except Exception as e:
-            print(f"Error during sync: {e}")
+    # Clear existing features before adding new ones
+    #flayer.delete_features(where="1=1")
+    # Use add_features to populate the empty service
+    result = flayer.edit_features(adds=all_features)
+    
+    # Check the result for success
+    if result['addResults']:
+        success_count = len([r for r in result['addResults'] if r['success']])
+        print(f"Successfully added {success_count} features.")
+    else:
+        print(f"Update failed: {result}")
             
     print("Update complete.")
