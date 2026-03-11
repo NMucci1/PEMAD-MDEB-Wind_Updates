@@ -130,6 +130,16 @@ def process_and_update_features(gis, data_dir, feature_config):
         else:
             # For all other layers, there are no duplicates. 
             print(f"[{name}] Not the target layer. Skipping deduplication.")
+          
+        mapping_csv_path = feature_config[name].get("mapping_csv")
+
+        # Call mapping function to convert any coded data into a non-coded, readable value    
+        if mapping_csv_path:
+            # If a mapping file is defined in the config, call the function
+            # and overwrite full_gdf with the processed result.
+            full_gdf = map_column_codes(full_gdf, mapping_csv_path)
+        else:
+            print(f"[{name}] No mapping CSV configured. Proceeding with original data.")
 
         # Map the Function column to the Construction Status column for Wind Turbines
         # Light support = Under construction/operational, NA = proposed
@@ -147,16 +157,6 @@ def process_and_update_features(gis, data_dir, feature_config):
                     return "Proposed" 
 
             full_gdf['CONSTRUCTION_STATUS'] = full_gdf['FUNCTN'].apply(determine_status)
-            
-        mapping_csv_path = feature_config[name].get("mapping_csv")
-
-        # Call mapping function to convert any coded data into a non-coded, readable value    
-        if mapping_csv_path:
-            # If a mapping file is defined in the config, call the function
-            # and overwrite full_gdf with the processed result.
-            full_gdf = map_column_codes(full_gdf, mapping_csv_path)
-        else:
-            print(f"[{name}] No mapping CSV configured. Proceeding with original data.")
 
         # Define AGOL item ID
         agol_id = feature_config[name].get("agol_item_id")
