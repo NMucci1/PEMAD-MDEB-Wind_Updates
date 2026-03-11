@@ -130,6 +130,23 @@ def process_and_update_features(gis, data_dir, feature_config):
         else:
             # For all other layers, there are no duplicates. 
             print(f"[{name}] Not the target layer. Skipping deduplication.")
+
+        # Map the Function column to the Construction Status column for Wind Turbines
+        # Light support = Under construction/operational, NA = proposed
+        if name == "Wind_Turbines":
+            print(f"[{name}] Applying Construction Status mapping...")
+            
+            # Use a lambda to handle 'light support' -> Under Construction and blanks -> Proposed
+            def determine_status(val):
+                val_str = str(val).strip().lower() if pd.notna(val) else ""
+                if val_str == "Light support":
+                    return "Under Construction/Operational"
+                elif val_str == "":
+                    return "Proposed"
+                else:
+                    return "Proposed" 
+
+            full_gdf['CONSTRUCTION_STATUS'] = full_gdf['FUNCTN'].apply(determine_status)
             
         mapping_csv_path = feature_config[name].get("mapping_csv")
 
