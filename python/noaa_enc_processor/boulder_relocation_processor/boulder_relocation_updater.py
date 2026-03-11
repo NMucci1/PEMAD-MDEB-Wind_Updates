@@ -41,16 +41,8 @@ def update_boulder_layer(gis, item_id, urls):
                             
                             props = feat['properties']
                             # Project attribute
-                            props['Project'] = project_name
-                            # Date conversion logic
-                            date_val = props.get('uploadDate')
-                            if date_val and isinstance(date_val, str):
-                                try:
-                                    dt_obj = datetime.strptime(date_val, '%Y-%m-%d')
-                                    props['uploadDate'] = int(dt_obj.timestamp() * 1000)
-                                except ValueError:
-                                    props['uploadDate'] = None # Handle bad date formats
-                            
+                            props['project'] = project_name
+                                                       
                             esri_feat = {
                                 "attributes": props,
                                 "geometry": {
