@@ -8,6 +8,7 @@ import zipfile
 import requests
 import json
 from arcgis.gis import GIS
+from datetime import datetime
 
 def update_boulder_layer(gis, item_id, urls):
     all_esri_features = []
@@ -26,8 +27,18 @@ def update_boulder_layer(gis, item_id, urls):
                         
                         # Convert GeoJSON Feature to Esri Feature format
                         for feat in gj_data['features']:
+                            # --- DATE CONVERSION LOGIC ---
+                            props = feat['properties']
+                            date_val = props.get('uploadDate')
+                            if date_val and isinstance(date_val, str):
+                                try:
+                                    dt_obj = datetime.strptime(date_val, '%Y-%m-%d')
+                                    props['uploadDate'] = int(dt_obj.timestamp() * 1000)
+                                except ValueError:
+                                    props['uploadDate'] = None # Handle bad date formats
+                            
                             esri_feat = {
-                                "attributes": feat['properties'],
+                                "attributes": props,
                                 "geometry": {
                                     "x": feat['geometry']['coordinates'][0],
                                     "y": feat['geometry']['coordinates'][1],
@@ -35,13 +46,39 @@ def update_boulder_layer(gis, item_id, urls):
                                 }
                             }
                             all_esri_features.append(esri_feat)
+                            
 
     if not all_esri_features:
         print("No features found.")
         return
 
+    # Schema initalization 
     target_item = gis.content.get(item_id)
     flayer = target_item.layers[0]
+
+    # 1. Define the columns to keep
+    target_fields = [
+        {"name": "name", "type": "esriFieldTypeString", "alias": "Name", "nullable": True},
+        {"name": "description", "type": "esriFieldTypeString", "alias": "Description", "nullable": True},
+        {"name": "uploadDate", "type": "esriFieldTypeDate", "alias": "Date", "nullable": True}
+    ]
+
+    # 2. Check if the layer is currently empty of fields
+    if not flayer.properties.fields:
+        print("Initializing layer schema...")
+        flayer.manager.add_to_definition({
+            "fields": target_fields
+        })
+
+    # 3. Filter features to ONLY include these attributes
+    allowed_keys = [f['name'] for f in target_fields]
+    
+    cleaned_features = []
+    for feat in all_esri_features:
+        # Create a new attribute dict containing only allowed keys
+        filtered_attributes = {k: v for k, v in feat['attributes'].items() if k in allowed_keys}
+        feat['attributes'] = filtered_attributes
+        cleaned_features.append(feat)
 
     # Conditional Delete: Only if records exist
     try:
@@ -56,10 +93,10 @@ def update_boulder_layer(gis, item_id, urls):
         print("Layer schema not yet initialized. Skipping delete step.")
 
     # UPLOAD: Push in batches of 1000 to avoid timeout/size errors
-    print(f"Pushing {len(all_esri_features)} features to: {target_item.title}...")
+    print(f"Pushing {len(cleaned_features)} features to: {target_item.title}...")
     
-    for i in range(0, len(all_esri_features), 1000):
-        chunk = all_esri_features[i:i + 1000]
+    for i in range(0, len(cleaned_features), 1000):
+        chunk = cleaned_features[i:i + 1000]
         result = flayer.edit_features(adds=chunk)
         
         # Check for errors in the batch
