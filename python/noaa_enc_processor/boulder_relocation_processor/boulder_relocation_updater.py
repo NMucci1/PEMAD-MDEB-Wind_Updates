@@ -15,6 +15,17 @@ def update_boulder_layer(gis, item_id, urls):
 
     for url in urls:
         print(f"Downloading: {url}")
+        # Determine project name based on url
+        if "8/23/246" in url:
+            project_name = "South Fork Wind"
+        elif "8/28/130" in url:
+            project_name = "Sunrise Wind"
+        elif "8/29/88" in url:
+            project_name = "Revolution Wind"
+        elif "5/16/34" in url:
+            project_name = "Vineyard Wind 1"
+        else:
+            project_name = ""  
         response = requests.get(url)
         if response.status_code != 200:
             continue
@@ -27,8 +38,11 @@ def update_boulder_layer(gis, item_id, urls):
                         
                         # Convert GeoJSON Feature to Esri Feature format
                         for feat in gj_data['features']:
-                            # --- DATE CONVERSION LOGIC ---
+                            
                             props = feat['properties']
+                            # Project attribute
+                            props['Project'] = project_name
+                            # Date conversion logic
                             date_val = props.get('uploadDate')
                             if date_val and isinstance(date_val, str):
                                 try:
@@ -60,7 +74,7 @@ def update_boulder_layer(gis, item_id, urls):
     target_fields = [
         {"name": "name", "type": "esriFieldTypeString", "alias": "Name", "nullable": True},
         {"name": "description", "type": "esriFieldTypeString", "alias": "Description", "nullable": True},
-        {"name": "uploadDate", "type": "esriFieldTypeDate", "alias": "Date", "nullable": True}
+        {"name": "project", "type": "esriFieldTypeString", "alias": "Project", "nullable": True} 
     ]
 
     # 2. Check if the layer is currently empty of fields
