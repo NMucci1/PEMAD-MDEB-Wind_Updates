@@ -146,16 +146,17 @@ def process_and_update_features(gis, data_dir, feature_config):
         if name == "Wind_Turbines":
             print(f"[{name}] Applying Construction Status mapping...")
             
-            # Use a lambda to handle 'light support' -> Under Construction and blanks -> Proposed
             def determine_status(val):
-                val_str = str(val).strip().lower() if pd.notna(val) else ""
-                if val_str == "Light support":
-                    return "Under Construction/Operational"
-                elif val_str == "":
+                # Handle Nulls/Blanks immediately
+                if pd.isna(val) or str(val).strip() == "":
                     return "Proposed"
-                else:
-                    return "Proposed" 
-
+                # Clean and lowercase for comparison
+                val_clean = str(val).strip().lower()
+                # Compare against lowercase "light support"
+                if val_clean == "light support":
+                    return "Under Construction/Operational"
+                 # Catch-all for other non-blank values
+                return "Proposed" 
             full_gdf['CONSTRUCTION_STATUS'] = full_gdf['FUNCTN'].apply(determine_status)
 
         # Define AGOL item ID
