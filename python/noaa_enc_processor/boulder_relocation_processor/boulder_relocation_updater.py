@@ -8,10 +8,14 @@ import zipfile
 import requests
 import json
 from arcgis.gis import GIS
-from datetime import datetime
+from pyproj import Transformer
 
 def update_boulder_layer(gis, item_id, urls):
     all_esri_features = []
+
+    # Setup Coordinate Transformer
+    # From WGS84 (4326) to Web Mercator (3857)
+    transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
 
     for url in urls:
         print(f"Downloading: {url}")
@@ -42,13 +46,20 @@ def update_boulder_layer(gis, item_id, urls):
                             props = feat['properties']
                             # Project attribute
                             props['project'] = project_name
+
+                            # COORDINATE TRANSFORMATION
+                            lon = feat['geometry']['coordinates'][0]
+                            lat = feat['geometry']['coordinates'][1]
+                            
+                            # Convert degrees to meters
+                            x_meters, y_meters = transformer.transform(lon, lat)
                                                        
                             esri_feat = {
                                 "attributes": props,
                                 "geometry": {
-                                    "x": feat['geometry']['coordinates'][0],
-                                    "y": feat['geometry']['coordinates'][1],
-                                    "spatialReference": {"wkid": 4326}
+                                    "x": x_meters,
+                                    "y": y_meters,
+                                    "spatialReference": {"wkid": 102100} # Set to Web Mercator
                                 }
                             }
                             all_esri_features.append(esri_feat)
@@ -64,8 +75,8 @@ def update_boulder_layer(gis, item_id, urls):
 
     # 1. Define the columns to keep
     target_fields = [
-        {"name": "name", "type": "esriFieldTypeString", "alias": "Name", "nullable": True},
-        {"name": "description", "type": "esriFieldTypeString", "alias": "Description", "nullable": True},
+        {"name": "name", "type": "esriFieldTypeString", "alias": "Boulder ID", "nullable": True},
+        {"name": "description", "type": "esriFieldTypeString", "alias": "Information", "nullable": True},
         {"name": "project", "type": "esriFieldTypeString", "alias": "Project", "nullable": True} 
     ]
 
@@ -94,7 +105,7 @@ def update_boulder_layer(gis, item_id, urls):
             flayer.delete_features(where="1=1")
         else:
             print("Layer is already empty. Skipping delete step.")
-    except Exception as e:
+    except Exception:
         # If the layer is so new it has no table yet, query might fail
         print("Layer schema not yet initialized. Skipping delete step.")
 
@@ -110,6 +121,10 @@ def update_boulder_layer(gis, item_id, urls):
             fails = [r for r in result['addResults'] if not r['success']]
             if fails:
                 print(f"Batch {(i//1000)+1} had {len(fails)} failures. Error: {fails[0].get('error')}")
+    
+    # Refesh the layer extent
+    flayer.manager.refresh()
+    target_item.update(item_properties={'extent': flayer.properties.extent})
     
     print("Sync complete.")
     print("Update complete.")
