@@ -44,8 +44,12 @@ def update_boulder_layer(gis, item_id, urls):
                         for feat in gj_data['features']:
                             
                             props = feat['properties']
-                            # Project attribute
-                            props['project'] = project_name
+                            # Map GeoJSON column name to AGOL column name
+                            formatted_props = {
+                                "Boulder_ID": props.get('name'),
+                                "Information": props.get('description'),
+                                "Project": project_name
+                            }
 
                             # COORDINATE TRANSFORMATION
                             lon = feat['geometry']['coordinates'][0]
@@ -55,7 +59,7 @@ def update_boulder_layer(gis, item_id, urls):
                             x_meters, y_meters = transformer.transform(lon, lat)
                                                        
                             esri_feat = {
-                                "attributes": props,
+                                "attributes": formatted_props,
                                 "geometry": {
                                     "x": x_meters,
                                     "y": y_meters,
@@ -75,9 +79,9 @@ def update_boulder_layer(gis, item_id, urls):
 
     # 1. Define the columns to keep
     target_fields = [
-        {"name": "name", "type": "esriFieldTypeString", "alias": "Boulder ID", "nullable": True},
-        {"name": "description", "type": "esriFieldTypeString", "alias": "Information", "nullable": True},
-        {"name": "project", "type": "esriFieldTypeString", "alias": "Project", "nullable": True} 
+        {"name": "Boulder_ID", "type": "esriFieldTypeString", "alias": "Boulder ID", "nullable": True},
+        {"name": "Information", "type": "esriFieldTypeString", "alias": "Information", "nullable": True},
+        {"name": "Project", "type": "esriFieldTypeString", "alias": "Project", "nullable": True} 
     ]
 
     # 2. Check if the layer is currently empty of fields

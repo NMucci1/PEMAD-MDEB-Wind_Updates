@@ -14,11 +14,6 @@ def run_workflow():
 
     """
     # 1. Define .env variables to log into AGOL
-    try:
-        from dotenv import load_dotenv
-        load_dotenv(dotenv_path = os.path.expandvars(r"%USERPROFILE%\.config\secrets\.env"))
-    except ImportError:
-        pass
     # Get credentials securely using os.getenv()
     portal_url = os.getenv("ARCGIS_URL")
     username = os.getenv("ARCGIS_USERNAME")
