@@ -36,17 +36,12 @@ def update_boulder_layer(gis, item_id, project_map):
                                 "Information": props.get('description'),
                                 "Project": project_name
                             }
-
-                            # COORDINATE TRANSFORMATION
-                            lon = feat['geometry']['coordinates'][0]
-                            lat = feat['geometry']['coordinates'][1]
-                            
-                                                         
+            
                             esri_feat = {
                                 "attributes": formatted_props,
                                 "geometry": {
-                                    "x": lon,
-                                    "y": lat,
+                                    "x": feat['geometry']['coordinates'][0],
+                                    "y": feat['geometry']['coordinates'][1],
                                     "spatialReference": {"wkid": 4326}
                                 }
                             }
@@ -108,10 +103,6 @@ def update_boulder_layer(gis, item_id, project_map):
             fails = [r for r in result['addResults'] if not r['success']]
             if fails:
                 print(f"Batch {(i//1000)+1} had {len(fails)} failures. Error: {fails[0].get('error')}")
-    
-    # Refesh the layer extent
-    flayer.manager.refresh()
-    target_item.update(item_properties={'extent': flayer.properties.extent})
-    
+
     print("Sync complete.")
     print("Update complete.")

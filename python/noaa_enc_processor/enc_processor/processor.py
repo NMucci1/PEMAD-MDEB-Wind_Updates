@@ -144,7 +144,40 @@ def process_and_update_features(gis, data_dir, feature_config):
         # Map the Function column to the Construction Status column for Wind Turbines
         # Light support = Under construction/operational, NA = proposed
         if name == "Wind_Turbines":
-            print(f"[{name}] Applying Construction Status mapping...")
+            print(f"[{name}] Filling blank OBJNAMs and splitting project info...")
+
+            # Define the manual mapping for blank OBJNAM rows based on FIDN
+            # Format: {FIDN_Value: "Project Name WTG ID"}
+            fidn_fix_map = {
+                69282477: "Sunrise Wind WTG AR16",
+                36834519: "Block Island Wind Farm WTG WTG-5",
+                36834553: "Block Island Wind Farm WTG WTG-3",
+                36834504: "Block Island Wind Farm WTG WTG-4",
+                36834554: "Block Island Wind Farm WTG WTG-1",
+                36834514: "Block Island Wind Farm WTG WTG-2"
+            }
+
+            # Fill blanks only where OBJNAM is null or empty
+            def fill_missing_objnam(row):
+                # Check if OBJNAM is null or just whitespace
+                if pd.isna(row['OBJNAM']) or str(row['OBJNAM']).strip() == "":
+                    # Return the mapped value if FIDN exists in the dictionary
+                    return fidn_fix_map.get(row['FIDN'], row['OBJNAM'])
+                return row['OBJNAM']
+
+            if 'FIDN' in full_gdf.columns:
+                full_gdf['OBJNAM'] = full_gdf.apply(fill_missing_objnam, axis=1)
+
+            # Run splitting logic to split OBJNAM column into project name and wind turbine ID
+            if 'OBJNAM' in full_gdf.columns:
+                # Split the string at ' WTG ' (including spaces to keep it clean)
+                # n=1 ensures we only split at the first occurrence
+                split_cols = full_gdf['OBJNAM'].str.split(' WTG ', n=1, expand=True)
+                
+                # Assign to new columns
+                full_gdf['PROJECT'] = split_cols[0]
+                # We add 'WTG ' back to the second part so it reads 'WTG AE10'
+                full_gdf['WIND_TURBINE_ID'] = split_cols[1]
             
             def determine_status(val):
                 # Handle Nulls/Blanks immediately
@@ -158,6 +191,43 @@ def process_and_update_features(gis, data_dir, feature_config):
                  # Catch-all for other non-blank values
                 return "Proposed" 
             full_gdf['CONSTRUCTION_STATUS'] = full_gdf['FUNCTN'].apply(determine_status)
+
+        # Map the Function column to the Construction Status column for Wind Turbines
+        # Light support = Under construction/operational, NA = proposed
+        if name == "Offshore_Substations":
+            print(f"[{name}] Filtering out observation platforms")
+            if 'CATOFP' in full_gdf.columns:
+                # Keep only rows that are NOT 'observation/research platform'
+                full_gdf = full_gdf[full_gdf['CATOFP'] != 'observation/research platform']
+            
+            print(f"[{name}] Filling blank OBJNAMs and splitting project info...")
+            # Define the manual mapping for blank OBJNAM rows based on FIDN
+            # Format: {FIDN_Value: "Project Name OSS ID"}
+            fidn_fix_map = {
+                102474376: "Coastal Virginia Offshore Substation OSS T3G15"
+            }
+
+            # Fill blanks only where OBJNAM is null or empty
+            def fill_missing_objnam(row):
+                # Check if OBJNAM is null or just whitespace
+                if pd.isna(row['OBJNAM']) or str(row['OBJNAM']).strip() == "":
+                    # Return the mapped value if FIDN exists in the dictionary
+                    return fidn_fix_map.get(row['FIDN'], row['OBJNAM'])
+                return row['OBJNAM']
+
+            if 'FIDN' in full_gdf.columns:
+                full_gdf['OBJNAM'] = full_gdf.apply(fill_missing_objnam, axis=1)
+
+            # Run splitting logic to split OBJNAM column into project name and wind turbine ID
+            if 'OBJNAM' in full_gdf.columns:
+                # Split the string at ' PROD ' or ' Offshore Substation OSS ' (including spaces to keep it clean)
+                pattern = r' PROD | Offshore Substation OSS '
+                split_cols = full_gdf['OBJNAM'].str.split(pattern, n=1, expand=True, regex=True)
+                
+                # Assign to new columns
+                full_gdf['PROJECT'] = split_cols[0]
+                # We add 'WTG ' back to the second part so it reads 'WTG AE10'
+                full_gdf['OSS_ID'] = split_cols[1]
 
         # Define AGOL item ID
         agol_id = feature_config[name].get("agol_item_id")

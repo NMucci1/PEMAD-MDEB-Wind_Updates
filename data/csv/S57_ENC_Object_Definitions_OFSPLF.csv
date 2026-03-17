@@ -14,7 +14,7 @@ FFPT_RIND,Feature to feature object pointer relationship indicator,Relationship 
 CATOFP,Category of offshore platform,Offshore platform category
 COLOUR,Color,"Color; must be encoded for all LIGHTS objects, except air obstruction lights or fog detector lights."
 COLPAT,Color pattern,Color pattern; Mandatory for ANY OBJECT that has more than one colour.
-CONDTN,Condition,"The attribute condition encodes the various conditions of buildings and other constructions. The default condition should be considered to be completed, undamaged and working normally. This attribute should, therefore, only be used to indicate objects whose condition is anything other than normal."
+CONDTN,Construction Status,"The attribute condition encodes the various conditions of buildings and other constructions. The default condition should be considered to be completed, undamaged and working normally. This attribute should, therefore, only be used to indicate objects whose condition is anything other than normal."
 CONRAD,Radar conspicuous,Indicates if an object is conspicuous by radar
 CONVIS,Visually conspicuous,Indicates if an object is visually conspicuous
 DATEND,Date end,The attribute 'date end' indicates the latest date on which an object (e.g. a buoy) will be present. This attribute is to be used to indicate the removal or cancellation of an object at a specific date in the future. See also 'periodic date end'
