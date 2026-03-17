@@ -8,30 +8,16 @@ import zipfile
 import requests
 import json
 from arcgis.gis import GIS
-from pyproj import Transformer
 
-def update_boulder_layer(gis, item_id, urls):
+def update_boulder_layer(gis, item_id, project_map):
     all_esri_features = []
 
-    # Setup Coordinate Transformer
-    # From WGS84 (4326) to Web Mercator (3857)
-    transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
-
-    for url in urls:
-        print(f"Downloading: {url}")
-        # Determine project name based on url
-        if "8/23/246" in url:
-            project_name = "South Fork Wind"
-        elif "8/28/130" in url:
-            project_name = "Sunrise Wind"
-        elif "8/29/88" in url:
-            project_name = "Revolution Wind"
-        elif "5/16/34" in url:
-            project_name = "Vineyard Wind 1"
-        else:
-            project_name = ""  
+    for url, project_name in project_map.items():
+        print(f"Downloading: {url} for Project: {project_name}")
+        
         response = requests.get(url)
         if response.status_code != 200:
+            print(f"Failed to download {url}")
             continue
             
         with zipfile.ZipFile(io.BytesIO(response.content)) as z:
@@ -55,19 +41,16 @@ def update_boulder_layer(gis, item_id, urls):
                             lon = feat['geometry']['coordinates'][0]
                             lat = feat['geometry']['coordinates'][1]
                             
-                            # Convert degrees to meters
-                            x_meters, y_meters = transformer.transform(lon, lat)
-                                                       
+                                                         
                             esri_feat = {
                                 "attributes": formatted_props,
                                 "geometry": {
-                                    "x": x_meters,
-                                    "y": y_meters,
-                                    "spatialReference": {"wkid": 102100} # Set to Web Mercator
+                                    "x": lon,
+                                    "y": lat,
+                                    "spatialReference": {"wkid": 4326}
                                 }
                             }
-                            all_esri_features.append(esri_feat)
-                            
+                            all_esri_features.append(esri_feat)               
 
     if not all_esri_features:
         print("No features found.")
