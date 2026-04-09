@@ -5,6 +5,11 @@
 from pathlib import Path
 import os
 
+# Path to csv file for Empire Wind boulder relocation
+config_file = Path(__file__).resolve()
+project_root = config_file.parents[3]
+csv_file_path = project_root / "data" / "csv" / "EmpireWind_BoulderRelocation.csv"
+
 # Map the URL to the specific Project Name
 boulder_projects = {
     "https://www.quintham.com//EMIN/8/23/246/GeoJson.zip": "South Fork Wind",

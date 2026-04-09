@@ -7,11 +7,13 @@ import io
 import zipfile
 import requests
 import json
+import csv
 from arcgis.gis import GIS
 
-def update_boulder_layer(gis, item_id, project_map):
+def update_boulder_layer(gis, item_id, project_map, csv_path=None):
     all_esri_features = []
 
+    # Download and process GeoJSON files
     for url, project_name in project_map.items():
         print(f"Downloading: {url} for Project: {project_name}")
         
@@ -45,8 +47,35 @@ def update_boulder_layer(gis, item_id, project_map):
                                     "spatialReference": {"wkid": 4326}
                                 }
                             }
-                            all_esri_features.append(esri_feat)               
+                            all_esri_features.append(esri_feat) 
 
+    # Process csv file of Empire Wind boulder locations
+    if csv_path and csv_path.exists():
+        print(f"Processing CSV file: {csv_path}")
+        with open(csv_path, mode='r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    # Creating the feature structure to match the AGOL schema
+                    csv_feat = {
+                        "attributes": {
+                            "Boulder_ID": row.get('Boulder_ID'),
+                            "Information": row.get('Information'),
+                            "Project": row.get('Project')
+                        },
+                        "geometry": {
+                            "x": float(row.get('Lon')),
+                            "y": float(row.get('Lat')),
+                            "spatialReference": {"wkid": 4326}
+                        }
+                    }
+                    all_esri_features.append(csv_feat)
+                except (ValueError, TypeError) as e:
+                    print(f"Skipping CSV row {row.get('Boulder_ID')} due to invalid coordinates.")
+    else:
+        print(f"Note: No CSV file found or processed at {csv_path}")
+
+    # Upload to AGOL
     if not all_esri_features:
         print("No features found.")
         return

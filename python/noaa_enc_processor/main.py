@@ -51,7 +51,8 @@ def run_workflow():
     boulder_relocation_updater.update_boulder_layer(
         gis=gis,
         item_id = boulder_config.boulder_agol_id,
-        project_map=boulder_config.boulder_projects
+        project_map=boulder_config.boulder_projects,
+        csv_path=boulder_config.csv_file_path
     )
 
 # Run the workflow
